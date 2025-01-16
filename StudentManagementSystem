@@ -1,0 +1,135 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Define the Student class
+class Student {
+public:
+    string name;
+    int id;
+    float grade;
+
+    void display() {
+        cout << "ID: " << id << ", Name: " << name << ", Grade: " << grade << endl;
+    }
+};
+
+// Function prototypes
+void addStudent(vector<Student>& students);
+void displayStudents(const vector<Student>& students);
+void searchStudent(const vector<Student>& students);
+void saveToFile(const vector<Student>& students);
+void loadFromFile(vector<Student>& students);
+
+int main() {
+    vector<Student> students;
+    loadFromFile(students); // Load existing data if any
+
+    int choice;
+    do {
+        cout << "\nStudent Management System\n";
+        cout << "1. Add Student\n";
+        cout << "2. Display Students\n";
+        cout << "3. Search Student\n";
+        cout << "4. Save and Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            addStudent(students);
+            break;
+        case 2:
+            displayStudents(students);
+            break;
+        case 3:
+            searchStudent(students);
+            break;
+        case 4:
+            saveToFile(students);
+            cout << "Data saved. Exiting program.\n";
+            break;
+        default:
+            cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+
+// Function to add a student
+void addStudent(vector<Student>& students) {
+    Student s;
+    cout << "Enter Student ID: ";
+    cin >> s.id;
+    cin.ignore(); // Clear the input buffer
+    cout << "Enter Student Name: ";
+    getline(cin, s.name);
+    cout << "Enter Student Grade: ";
+    cin >> s.grade;
+
+    students.push_back(s);
+    cout << "Student added successfully!\n";
+}
+
+// Function to display all students
+void displayStudents(const vector<Student>& students) {
+    if (students.empty()) {
+        cout << "No students to display.\n";
+        return;
+    }
+
+    cout << "\nList of Students:\n";
+    for (const auto& student : students) {
+        student.display();
+    }
+}
+
+// Function to search for a student by ID
+void searchStudent(const vector<Student>& students) {
+    int id;
+    cout << "Enter Student ID to search: ";
+    cin >> id;
+
+    for (const auto& student : students) {
+        if (student.id == id) {
+            cout << "Student Found:\n";
+            student.display();
+            return;
+        }
+    }
+    cout << "Student not found.\n";
+}
+
+// Function to save students to a file
+void saveToFile(const vector<Student>& students) {
+    ofstream outFile("students.txt");
+    if (!outFile) {
+        cout << "Error opening file for writing.\n";
+        return;
+    }
+
+    for (const auto& student : students) {
+        outFile << student.id << "\n" << student.name << "\n" << student.grade << "\n";
+    }
+    outFile.close();
+}
+
+// Function to load students from a file
+void loadFromFile(vector<Student>& students) {
+    ifstream inFile("students.txt");
+    if (!inFile) {
+        return; // No file to load
+    }
+
+    Student s;
+    while (inFile >> s.id) {
+        inFile.ignore(); // Clear newline
+        getline(inFile, s.name);
+        inFile >> s.grade;
+        students.push_back(s);
+    }
+    inFile.close();
+}
